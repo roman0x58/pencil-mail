@@ -18,6 +18,7 @@ package pencil.protocol
 
 import cats.Show
 import cats.syntax.show.*
+import com.minosiants.pencil.protocol.ContentDisposition
 
 enum Header:
   case `MIME-Version`(value: String = "1.0")
@@ -29,6 +30,17 @@ enum Header:
   case `Content-Transfer-Encoding`(
       mechanism: Encoding
   )
+  case `Content-Disposition`(
+                              contentDisposition: ContentDisposition,
+                              params: Map[String, String] = Map.empty
+                            ) extends Header
+
+  private def paramsToValues(params: Map[String, String]): String =
+    params.iterator
+      .map {
+        case (key, value) => s"${key}=${value}"
+      }
+      .mkString(";")
 
 object Header:
   given Show[Header] = Show.show {
@@ -40,7 +52,8 @@ object Header:
         .map { case (key, value) => s"${key}=${value}" }
         .mkString(";")
       s"Content-Type: ${ct.show}; $values"
-
+    case `Content-Disposition`(contentDisposition, params) =>
+      s"Content-Disposition: ${contentDisposition.show}; ${paramsToValues(params)}"
     case `Content-Transfer-Encoding`(mechanism) =>
       s"Content-Transfer-Encoding: ${mechanism.show}"
   }

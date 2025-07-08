@@ -296,6 +296,11 @@ object Smtp {
   )(using sh: Show[Header]): Smtp[F, Unit] =
     text[F](s"${sh.show(ct)}${Command.end}")
 
+  def contentDispositionHeader[F[_]](
+                                      cd: `Content-Disposition`
+                                    ): Smtp[F, Unit] =
+    text(s"${headerShow.show(cd)}${Command.end}")
+
   def contentTransferEncoding[F[_]](encoding: Encoding)(using
       sh: Show[Header]
   ): Smtp[F, Unit] =
