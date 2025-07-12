@@ -1,14 +1,15 @@
 <configuration>
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <withJansi>true</withJansi>
-        <encoder>
-            <pattern>[%thread] %highlight(%-5level) %cyan(%logger{15}) - %msg %n</pattern>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>
+                [%d{dd.MM.yyyy HH:mm:ss.SSS}] %highlight([%-5level]) %-40logger{40} - %msg%n
+            </pattern>
         </encoder>
     </appender>
-    <logger name="pencil" level="info" >
-        <appender-ref ref="STDOUT" />
-     </logger>
-    <root level="info">
+
+    <root level="INFO">
         <appender-ref ref="STDOUT" />
     </root>
+    <logger name="smtp.base" level="DEBUG"/>
+    <logger name="smtp.integration.test" level="DEBUG"/>
 </configuration>

@@ -1,17 +1,25 @@
-// Your profile name of the sonatype account. The default is the same with the organization value
-sonatypeProfileName := "com.minosiants"
+import xerial.sbt.Sonatype.{GitHubHosting, sonatype01}
 
-// To sync with Maven central, you need to supply the following information:
+usePgpKeyHex("0x47E532CC")
+
+sonatypeProfileName := "io.github.roman0x58"
+
+sonatypeCredentialHost := sonatype01
+
+publishTo := sonatypePublishToBundle.value
+
 publishMavenStyle := true
 
-// Open-source license of your choice
 licenses := Seq("APL2" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt"))
 
-// Where is the source code hosted: GitHub or GitLab?
-import xerial.sbt.Sonatype._
-sonatypeProjectHosting := Some(
-  GitHubHosting("minosiants", "pencil", "k@minosiants.com")
-)
+homepage := Some(url("https://github.com/roman0x58/pencil-mail"))
+
+sonatypeProjectHosting := Some(GitHubHosting("roman0x58", "pencil-mail", "roman.sstu@gmail.com"))
+
+scmInfo := Some(ScmInfo(
+  url("https://github.com/roman0x58/pencil-mail"),
+  "scm:git@github.com:roman0x58/pencil-mail.git"
+))
 
 developers := List(
   Developer(
@@ -19,5 +27,11 @@ developers := List(
     name = "kaspar",
     email = "k@minosiants.com",
     url = url("http://minosiants.com")
+  ),
+  Developer(
+    id = "roman0x58",
+    name = "Roman Belikin",
+    email = "roman.sstu@gmail.com",
+    url = url("https://romanbelikin.com")
   )
 )

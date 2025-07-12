@@ -1,14 +1,15 @@
-# Pencil 
-[![Join the chat at https://gitter.im/minosiants/pencil](https://badges.gitter.im/minosiants/pencil.svg)](https://gitter.im/minosiants/pencil?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-![build](https://github.com/minosiants/pencil/workflows/build/badge.svg)
+# PencilMail
 
-### Overview 
-`Pencil` is a simple smtp client. The main goal is to be able to send emails in the simplest way.   
-It is build on top of [cats](https://typelevel.org/cats/), [cats-effect](https://typelevel.org/cats-effect/), [fs2](https://fs2.io/), [scodec](http://scodec.org/)
+Fork of https://github.com/minosiants/pencil with added AWS SES support, various fixes, improved tests, various enhancements, and removal of the Apache Tika dependency.
 
-`Pencil` supports: 
-* Text email (ascii)
-* Mime email 
+### Overview
+
+`PencilMail` is a simple SMTP client. Its main goal is to send emails in the simplest possible way.  
+It is built on top of [cats](https://typelevel.org/cats/), [cats-effect](https://typelevel.org/cats-effect/), [fs2](https://fs2.io/), and [scodec](http://scodec.org/).
+
+`PencilMail` supports:
+* Text emails (ASCII)
+* MIME emails
 * TLS
 * Authentication
 
@@ -16,30 +17,27 @@ It is build on top of [cats](https://typelevel.org/cats/), [cats-effect](https:/
 
 * [RFC 5321 - Simple Mail Transfer Protocol](https://tools.ietf.org/html/rfc5321)
 * Multipurpose Internet Mail Extensions
-  * [RFC 2045 - Part one - Format of Internet message bodies](https://tools.ietf.org/html/rfc2045)
-  * [RFC 2046 - Part two - Media Types](https://tools.ietf.org/html/rfc2046)
-  * [RFC 2047 - Part three - Message Header Extensions for Non-ASCII Text](https://tools.ietf.org/html/rfc2047)
-  * [RFC 2049 - Part five - Confirmance criteria and examples](https://tools.ietf.org/html/rfc2049)
-  * [RFC 4288 - Media Type Specifications and Registration Procedures](https://tools.ietf.org/html/rfc4288)
-  * [RFC 1521 - MIME Part one - Mechanisms for Specifying and Describing the Format of Internet Message Bodies](https://tools.ietf.org/html/rfc1521)
-  * [RFC 1522 - MIME Part two - Message Header Extensions for Non-ASCII Text](https://tools.ietf.org/html/rfc1522)
-  * [RFC 4954 - SMTP Service Extension for Authentication](https://tools.ietf.org/html/rfc4954)
-
+    * [RFC 2045 - Format of Internet Message Bodies](https://tools.ietf.org/html/rfc2045)
+    * [RFC 2046 - Media Types](https://tools.ietf.org/html/rfc2046)
+    * [RFC 2047 - Message Header Extensions for Non-ASCII Text](https://tools.ietf.org/html/rfc2047)
+    * [RFC 2049 - Conformance Criteria and Examples](https://tools.ietf.org/html/rfc2049)
+    * [RFC 4288 - Media Type Specifications and Registration Procedures](https://tools.ietf.org/html/rfc4288)
+    * [RFC 1521 - Mechanisms for Specifying and Describing the Format of Internet Message Bodies](https://tools.ietf.org/html/rfc1521)
+    * [RFC 1522 - Message Header Extensions for Non-ASCII Text](https://tools.ietf.org/html/rfc1522)
+    * [RFC 4954 - SMTP Service Extension for Authentication](https://tools.ietf.org/html/rfc4954)
 
 ### Usage
+
 Add dependency to your `build.sbt`
 
-#### for scala 3 
+#### For Scala 3
+
 ```scala
-libraryDependencies += "com.minosiants" %% "pencil" % "2.0.0"
-```
-#### for scala 2.13
-```scala
-libraryDependencies += "com.minosiants" %% "pencil" % "1.2.0"
+libraryDependencies += "io.github.roman0x58" %% "pencilmail" % "3.0.0"
+
 ```
 
-### Examples how to use it
-
+### Examples
 
 #### Create text email
 
@@ -50,8 +48,10 @@ val email = Email.text(
       subject"first email",
       Body.Ascii("hello")
 )
+
 ```
-#### Create mime email
+
+#### Create MIME email with attachment
 
 ```scala
 val email = Email.mime(
@@ -60,9 +60,10 @@ val email = Email.mime(
      subject"привет",
      Body.Utf8("hi there")
 ) + attachment"path/to/file"
+
 ```
 
-#### Create mime email
+#### Create MIME email with alternative bodies
 
 ```scala
 val email = Email.mime(
@@ -71,14 +72,16 @@ val email = Email.mime(
      subject"привет",
      Body.Alternative(List(Body.Utf8("hi there3"), Body.Ascii("hi there2")))
 )
+
 ```
 
-#### Send email
+#### Send email example
 
 ```scala
 object Main extends IOApp {
 
-  val logger    = Slf4jLogger.getLogger[IO]
+  val logger = Slf4jLogger.getLogger[IO]
+
   override def run(args: List[String]): IO[ExitCode] = {
     val credentials = Credentials(
       Username("user1@mydomain.tld"),
@@ -86,25 +89,44 @@ object Main extends IOApp {
     )
     val action = for {
       tls <- Network[IO].tlsContext.system
-      client = Client[IO](SocketAddress(host"localhost", port"25"), Some(credentials))(tls,logger)
+      client = Client[IO](
+        address = SocketAddress(host"localhost", port"25"),
+        mode = SmtpMode.Plain,
+        Some(credentials)
+      )(tls, logger)
       response <- client.send(email)
-    }yield response
+    } yield response
 
-    action.attempt
-            .map {
-              case Right(replies) =>
-                println(replies)
-                ExitCode.Success
-              case Left(error) =>
-                error match {
-                  case e: Error => println(e.toString)
-                  case e: Throwable => println(e.getMessage)
-                }
-                ExitCode.Error
-            }
+    action.attempt.flatMap {
+      case Right(replies) =>
+        logger.debug(replies)
+      case Left(error) =>
+        error match {
+          case e: Error => logger.debug(e.toString)
+          case e: Throwable => logger.debug(e.getMessage)
+        }
+    }.unsafeRunSync()
   }
 }
 
 ```
-## Docker Mailserver
- For test purposes [Docker Mailserver](https://github.com/jeboehm/docker-mailserver) can be used
+
+## Development
+
+### Creating test truststore
+
+```bash
+keytool -import -trustcacerts -keystore test-truststore.jks -storepass changeit -alias mailpit -file certificate.crt
+
+```
+
+### Running AWS SES integration tests
+
+```bash
+sbt -Daws.username=username -Daws.password=password -Daws.from=from -Daws.to=to
+
+```
+
+### Docker Mailserver
+
+For testing purposes, [Docker Mailserver](https://github.com/jeboehm/docker-mailserver) can be used.
