@@ -1,10 +1,10 @@
-import xerial.sbt.Sonatype.{GitHubHosting, sonatype01}
+import xerial.sbt.Sonatype.{GitHubHosting, sonatypeCentralHost}
 
 usePgpKeyHex("0x47E532CC")
 
 sonatypeProfileName := "io.github.roman0x58"
 
-sonatypeCredentialHost := sonatype01
+sonatypeCredentialHost := sonatypeCentralHost
 
 publishTo := sonatypePublishToBundle.value
 
