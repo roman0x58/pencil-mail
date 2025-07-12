@@ -74,7 +74,7 @@ class SendEmailSpec extends MailServerSpec {
                        "changeit".toCharArray,
                        "pencil1234".toCharArray
                      )
-        smtpClient = Client[IO](container.socketAddress(), mode, Some(container.credentials))(tls, logger)
+        smtpClient = Client[IO](container.socketAddress(), mode, Some(container.credentials), tls, logger)
         response  <- smtpClient.send(email)
       yield response
     EmberClientBuilder

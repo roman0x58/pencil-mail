@@ -32,21 +32,27 @@ import scodec.{Attempt, Codec, DecodeResult}
 import scala.concurrent.duration.*
 
 final class SocketTimeoutConfig private (
-    val socketReadTimeout: FiniteDuration
+    val socketReadTimeout: FiniteDuration,
+    val socketWriteTimeout: FiniteDuration
 ) { self =>
-  def withSocketReadTimeout(socketReadTimeout: FiniteDuration): SocketTimeoutConfig =
+  def withSocketWriteTimeout(socketReadTimeout: FiniteDuration): SocketTimeoutConfig =
+    copy(socketReadTimeout = socketReadTimeout)
+  def withSocketReadTimeout(socketReadTimeout: FiniteDuration): SocketTimeoutConfig  =
     copy(socketReadTimeout = socketReadTimeout)
 
   private def copy(
-      socketReadTimeout: FiniteDuration
+      socketReadTimeout: FiniteDuration = self.socketReadTimeout,
+      socketWriteTimeout: FiniteDuration = self.socketWriteTimeout
   ): SocketTimeoutConfig = new SocketTimeoutConfig(
-    socketReadTimeout = self.socketReadTimeout
+    socketReadTimeout = socketReadTimeout,
+    socketWriteTimeout = socketWriteTimeout
   )
 }
 
 object SocketTimeoutConfig {
   def default = new SocketTimeoutConfig(
-    socketReadTimeout = 10.seconds
+    socketReadTimeout = 10.seconds,
+    socketWriteTimeout = 10.seconds
   )
 }
 
@@ -93,15 +99,25 @@ object SmtpSocket:
           case None        => Error.smtpError[F, Replies]("Nothing to read")
         },
         timeoutConfig.socketReadTimeout,
-        Error.timeout[F, Replies](s"Socket timeout error. Timeout time exceeded: ${timeoutConfig.socketReadTimeout}")
+        Error.timeout[F, Replies](
+          s"Socket read timeout error. Timeout time exceeded: ${timeoutConfig.socketReadTimeout}"
+        )
       )
 
     override def write(command: Command): F[Unit] =
       utf8.encode(command.show) match
         case Attempt.Successful(value) =>
-          logger.debug(s"[$socketName] Sending command: ${command.show}") *>
-            underlying.write(Chunk.array(value.toByteArray))
+          Async[F].timeoutTo(
+            logger.debug(s"[$socketName] Sending command: ${command.show}") *>
+              underlying.write(Chunk.array(value.toByteArray)),
+            timeoutConfig.socketWriteTimeout,
+            Error.timeout[F, Unit](
+              s"Socket write timeout error. Timeout time exceeded: ${timeoutConfig.socketWriteTimeout}"
+            )
+          )
         case Attempt.Failure(cause)    =>
-          logger.error(s"An error occurred while writing command to socket ${command.show}. Cause: ${cause.messageWithContext}") *> Error.smtpError[F, Unit](cause.messageWithContext)
+          logger.error(
+            s"An error occurred while writing command to socket ${command.show}. Cause: ${cause.messageWithContext}"
+          ) *> Error.smtpError[F, Unit](cause.messageWithContext)
 
   }

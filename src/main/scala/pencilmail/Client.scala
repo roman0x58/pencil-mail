@@ -18,10 +18,10 @@ package pencilmail
 
 import cats.effect.{Async, Concurrent, Resource}
 import cats.syntax.applicativeError.*
-import cats.syntax.show.*
 import cats.syntax.apply.*
+import cats.syntax.show.*
 import com.comcast.ip4s.*
-import fs2.io.net.tls.TLSContext
+import fs2.io.net.tls.{TLSContext, TLSParameters}
 import fs2.io.net.{Network, Socket}
 import org.typelevel.log4cats.Logger
 import pencilmail.data.*
@@ -46,8 +46,12 @@ object Client:
   def apply[F[_]: {Async, Concurrent, Network}](
       address: SocketAddress[Host],
       mode: SmtpMode,
-      credentials: Option[Credentials]
-  )(tlsContext: TLSContext[F], logger: Logger[F]): Client[F] =
+      credentials: Option[Credentials],
+      tlsContext: TLSContext[F],
+      logger: Logger[F],
+      tlsParameters: TLSParameters = TLSParameters.Default,
+      socketTimeoutConfig: SocketTimeoutConfig = SocketTimeoutConfig.default
+  ): Client[F] =
     new Client[F] {
       private val socketResource: Resource[F, Socket[F]] = Network[F].client(address)
 
@@ -58,8 +62,12 @@ object Client:
       override def send(email: Email): F[Replies] = {
         val sockets = for
           socket <- socketResource
-          tls     = tlsContext.client(socket).map(SmtpSocket.fromSocket(_))
-        yield (SmtpSocket.fromSocket(socket), tls)
+          tls     = tlsContext
+                      .clientBuilder(socket)
+                      .withParameters(tlsParameters)
+                      .build
+                      .map(SmtpSocket.fromSocket(_, socketTimeoutConfig))
+        yield (SmtpSocket.fromSocket(socket, socketTimeoutConfig), tls)
 
         sockets
           .use { case (socket, tlsSocket) =>
@@ -74,8 +82,8 @@ object Client:
             (Smtp.liftF(logger.debug(s"Sending email using SMTP mode: $mode to address $address")) *> request)
               .run(SmtpRequest(email, socket))
           }
-          .recoverWith { 
-            case e: Error =>
+          .recoverWith {
+            case e: Error     =>
               logger.error(e)(s"SMTP error occurred while sending email message. ${e.show}") *> Async[F].raiseError(e)
             case e: Throwable =>
               logger.error(e)("An error occurred while sending email message") *> Async[F].raiseError(e)

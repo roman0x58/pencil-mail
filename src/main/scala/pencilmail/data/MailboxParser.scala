@@ -31,10 +31,10 @@ object MailboxParser {
   type LocalPart = String
   type Domain    = String
 
-  val special: List[Char]  =
+  val special: List[Char]   =
     List('<', '>', '(', ')', '[', ']', '\\', ',', ';', ':', '@', '\"')
-  val domainPattern: Regex = "^(?!-)[a-zA-Z0-9.-]+[^-]$".r
-  val mailboxPattern: Regex                                = """(.*)<(.*)>""".r
+  val domainPattern: Regex  = "^(?!-)[a-zA-Z0-9.-]+[^-]$".r
+  val mailboxPattern: Regex = """(.*)<(.*)>""".r
 
   def parse(mailbox: String): Either[Error, Mailbox] =
     for
@@ -52,25 +52,14 @@ object MailboxParser {
 
     localPart.toList
       .foldM(List.empty[Char]) {
-
-        case (Nil, x) if notValid(x) =>
-          Left(
-            Error
-              .InvalidMailBox(s"local part '$localPart' has invalid char $x'")
-          )
-        case (Nil, x)                => Right(Nil :+ x)
-        case (_, x) if notValid(x)   =>
-          Left(
-            Error
-              .InvalidMailBox(s"local part '$localPart' has invalid char $x'")
-          )
-
+        case (Nil, x) if notValid(x)                 =>
+          Left(Error.InvalidMailBox(s"local part '$localPart' has invalid char $x'"))
+        case (Nil, x)                                => Right(Nil :+ x)
+        case (_, x) if notValid(x)                   =>
+          Left(Error.InvalidMailBox(s"local part '$localPart' has invalid char $x'"))
         case (acc, x) if acc.last == '.' && x == '.' =>
-          Left(
-            Error.InvalidMailBox(s"local part '$localPart' has double dots $x'")
-          )
-
-        case (acc, x) => Right(acc :+ x)
+          Left(Error.InvalidMailBox(s"local part '$localPart' has double dots $x'"))
+        case (acc, x)                                => Right(acc :+ x)
 
       }
       .map(_.mkString)

@@ -1,3 +1,4 @@
+[![Maven Central](https://maven-badges.sml.io/maven-central/io.github.roman0x58/pencil-mail/badge.svg)](https://maven-badges.sml.io/maven-central/io.github.roman0x58/pencil-mail)
 # PencilMail
 
 Fork of https://github.com/minosiants/pencil with added AWS SES support, various fixes, improved tests, various enhancements, and removal of the Apache Tika dependency.
@@ -33,7 +34,7 @@ Add dependency to your `build.sbt`
 #### For Scala 3
 
 ```scala
-libraryDependencies += "io.github.roman0x58" %% "pencilmail" % "3.0.2"
+libraryDependencies += "io.github.roman0x58" %% "pencilmail" % "3.0.3"
 
 ```
 

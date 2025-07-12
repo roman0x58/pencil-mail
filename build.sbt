@@ -1,5 +1,3 @@
-import xerial.sbt.Sonatype.sonatype01
-
 val catsVersion = "2.13.0"
 val catsEffectVersion = "3.6.1"
 val fs2Version = "3.12.0"
@@ -16,7 +14,7 @@ val testContainersVersion = "1.21.3"
 
 lazy val root = (project in file("."))
   .settings(
-    version := "3.0.2",
+    version := "3.0.3",
     organization := "io.github.roman0x58",
     name := "pencil-mail",
     scalaVersion := "3.7.1",
@@ -55,4 +53,3 @@ lazy val root = (project in file("."))
       "https://www.apache.org/licenses/LICENSE-2.0.txt"
     ))
   )
-

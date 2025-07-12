@@ -1,3 +1,4 @@
+import com.jsuereth.sbtpgp.PgpKeys.publishSigned
 import xerial.sbt.Sonatype.{GitHubHosting, sonatypeCentralHost}
 
 usePgpKeyHex("0x47E532CC")
@@ -35,3 +36,12 @@ developers := List(
     url = url("https://romanbelikin.com")
   )
 )
+
+lazy val sonatypePipeline = taskKey[Unit]("Run tests, publish signed, and release to Sonatype")
+
+sonatypePipeline := Def.sequential(
+  clean,
+  Test / test,
+  publishSigned,
+  Def.task(Command.process("sonatypeBundleRelease", state.value, sys.error))
+).value

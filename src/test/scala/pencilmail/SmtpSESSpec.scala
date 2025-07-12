@@ -44,7 +44,7 @@ class SmtpSESSpec extends SpecificationLike with LiteralsSyntax {
                           Username(username.get),
                           Password(password.get)
                         ).some
-                      )(tls, logger)
+                      , tls, logger)
           response <- client.send(sesEmail)
         } yield response
 
