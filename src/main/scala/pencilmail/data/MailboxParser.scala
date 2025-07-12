@@ -101,10 +101,3 @@ object MailboxParser {
       .getOrElse((None, mailbox))
 
 }
-
-object A {
-  def main(args: Array[String]): Unit = {
-    val r = MailboxParser.extractName("hello<may@d.com>")
-    println(r)
-  }
-}
