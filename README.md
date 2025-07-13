@@ -93,8 +93,9 @@ object Main extends IOApp {
       client = Client[IO](
         address = SocketAddress(host"localhost", port"25"),
         mode = SmtpMode.Plain,
-        Some(credentials)
-      )(tls, logger)
+        Some(credentials),
+        tls,
+        logger)
       response <- client.send(email)
     } yield response
 
