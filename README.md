@@ -1,4 +1,4 @@
-[![Maven Central](https://maven-badges.sml.io/maven-central/io.github.roman0x58/pencil-mail/badge.svg)](https://maven-badges.sml.io/maven-central/io.github.roman0x58/pencil-mail)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.roman0x58/pencil-mail_3)](https://img.shields.io/maven-central/v/io.github.roman0x58/pencil-mail_3)
 # PencilMail
 
 Fork of https://github.com/minosiants/pencil with added AWS SES support, various fixes, improved tests, various enhancements, and removal of the Apache Tika dependency.
