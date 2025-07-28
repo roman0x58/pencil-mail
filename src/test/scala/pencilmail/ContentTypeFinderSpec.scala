@@ -8,7 +8,7 @@ import org.scalacheck.*
 import org.scalacheck.Prop.forAll
 import org.specs2.ScalaCheck
 import org.specs2.mutable.Specification
-
+import scala.language.implicitConversions
 import java.nio.file.{Path, Paths}
 
 class ContentTypeFinderSpec extends Specification with ScalaCheck {
@@ -17,7 +17,7 @@ class ContentTypeFinderSpec extends Specification with ScalaCheck {
   "ContentTypeFinder" should {
 
     "find content type" in forAll(pathGen) { case (p, t) =>
-      ContentTypeFinder.findType[IO](p).attempt.unsafeRunSync() ==== Right(t)
+      ContentTypeFinder.findType[IO](p).attempt.unsafeRunSync() === Right(t)
     }
 
     "not find file" in {

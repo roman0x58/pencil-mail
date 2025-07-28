@@ -13,6 +13,7 @@ import pencilmail.SmtpSpec.*
 import pencilmail.lib.{DataSamples, SmtpBaseSpec}
 import pencilmail.syntax.LiteralsSyntax
 import scodec.codecs
+import scala.language.implicitConversions
 
 class SmtpSpec extends SmtpBaseSpec {
 

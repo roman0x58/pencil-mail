@@ -7,14 +7,14 @@ import cats.syntax.show.*
 import pencilmail.lib.{DataSamples, Fixtures, SmtpBaseSpec}
 import pencilmail.protocol.Replies
 import scodec.codecs
-
+import scala.language.implicitConversions
 import java.nio.file.Path
 
 class SmtpOperationsSpec extends SmtpBaseSpec {
   sequential
 
   val requests = new SmtpOperations[IO](credentials.some)(using logger)
-  
+
   private def snapshot(log: String, path: String): Path = {
     val snap = java.nio.file.Files.writeString(Files.pathFromClassLoader[IO](path).unsafeRunSync(), log)
     logger.debug(s"Snapshot log written to $snap")

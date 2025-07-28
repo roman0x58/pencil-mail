@@ -9,7 +9,6 @@ import io.circe.generic.auto.*
 import org.http4s.EntityDecoder
 import org.http4s.circe.*
 import org.http4s.ember.client.EmberClientBuilder
-import org.specs2.matcher.MatchResult
 import pencilmail.SmtpMode.{Plain, StartTLS, TLS}
 import pencilmail.data.*
 import pencilmail.lib.*
@@ -50,7 +49,7 @@ class SendEmailSpec extends MailServerSpec {
     }
   }
 
-  def assertMail(email: Email, message: Message2): MatchResult[Any] = {
+  def assertMail(email: Email, message: Message2) = {
     def addresses(opt: Option[Seq[MailBox]]) = {
       val mailboxes: Seq[MailBox] = opt.toList.flatten
       mailboxes.map(_.Address)
@@ -60,10 +59,10 @@ class SendEmailSpec extends MailServerSpec {
     addresses(message.Cc) must containTheSameElementsAs(email.ccAddresses)
     addresses(message.To.some) must containTheSameElementsAs(email.toAddresses)
 
-    message.From.Address must_== email.from.address
-    Name(message.From.Name) must_== email.from.mailbox.name.get
-    message.Subject must_== email.subject.get.asString
-    message.Text.trim must_== email.body.flatMap(_.body).get
+    message.From.Address must equalTo(email.from.address)
+    Name(message.From.Name) must equalTo(email.from.mailbox.name.get)
+    message.Subject must equalTo(email.subject.get.asString)
+    message.Text.trim must equalTo(email.body.flatMap(_.body).get)
   }
 
   def execute(email: Email, mode: SmtpMode): IO[Message2] = {

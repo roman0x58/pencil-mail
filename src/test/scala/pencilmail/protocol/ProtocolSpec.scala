@@ -3,13 +3,14 @@ package protocol
 import data.*
 import org.scalacheck.Prop.forAll
 import org.specs2.ScalaCheck
+import org.specs2.execute.Result
 import org.specs2.mutable.Specification
 import scodec.{Attempt, Codec, DecodeResult}
 import scodec.bits.*
 import scodec.codecs.*
 
+import scala.language.implicitConversions
 import scala.io.Source
-import org.specs2.matcher.MatchResult
 
 class ProtocolSpec extends Specification with ScalaCheck with ProtocolGens {
 
@@ -35,10 +36,10 @@ class ProtocolSpec extends Specification with ScalaCheck with ProtocolGens {
 
   }
 
-  def property[A: Codec](a: A): MatchResult[Attempt[DecodeResult[A]]] = {
+  def property[A: Codec](a: A): Result = {
     val c = implicitly[Codec[A]]
     val encoded = c.encode(a)
     val decoded = encoded.flatMap(c.decode)
-    decoded ==== Attempt.successful(DecodeResult(a, BitVector.empty))
+    decoded === Attempt.successful(DecodeResult(a, BitVector.empty))
   }
 }

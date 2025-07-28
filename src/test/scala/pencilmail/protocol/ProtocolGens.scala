@@ -5,7 +5,7 @@ import org.scalacheck.Gen
 import data.*
 trait ProtocolGens extends EmailGens {
 
-  val codeGen: Gen[Code] = Gen.oneOf(Code.values)
+  val codeGen: Gen[Code] = Gen.oneOf(Code.values.toIndexedSeq)
 
   val replyGen: Gen[Reply] = for {
     code <- codeGen

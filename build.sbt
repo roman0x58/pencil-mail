@@ -1,9 +1,9 @@
 val catsVersion = "2.13.0"
-val catsEffectVersion = "3.6.1"
+val catsEffectVersion = "3.6.3"
 val fs2Version = "3.12.0"
-val scodecBitsVersion = "1.2.2"
+val scodecBitsVersion = "1.2.4"
 val scodecCoreVersion = "2.3.2"
-val specs2Version = "4.19.2"
+val specs2Version = "5.6.4"
 val scalacheckVersion = "1.18.1"
 val log4catsVersion = "2.7.1"
 val logbackVersion = "1.5.18"
@@ -14,7 +14,7 @@ val testContainersVersion = "1.21.3"
 
 lazy val root = (project in file("."))
   .settings(
-    version := "3.0.3",
+    version := "3.0.5",
     organization := "io.github.roman0x58",
     name := "pencil-mail",
     scalaVersion := "3.7.1",

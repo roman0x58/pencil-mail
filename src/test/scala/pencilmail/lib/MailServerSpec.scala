@@ -6,8 +6,7 @@ import cats.syntax.either.*
 import cats.syntax.show.*
 import fs2.io.net.Network
 import org.specs2.execute.{AsResult, Result}
-import org.specs2.mutable.{Around, SpecificationLike}
-import org.specs2.specification.{AfterAll, AroundEach, BeforeAll}
+import org.specs2.mutable.SpecificationLike
 import org.typelevel.log4cats.SelfAwareStructuredLogger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
 import pencilmail.data.*

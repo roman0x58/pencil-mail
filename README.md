@@ -34,7 +34,7 @@ Add dependency to your `build.sbt`
 #### For Scala 3
 
 ```scala
-libraryDependencies += "io.github.roman0x58" %% "pencilmail" % "3.0.3"
+libraryDependencies += "io.github.roman0x58" %% "pencilmail" % "3.0.5"
 
 ```
 

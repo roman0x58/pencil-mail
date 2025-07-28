@@ -1,19 +1,20 @@
 package pencilmail
 
 import cats.effect.IO
-import pencilmail.syntax.*
-import pencilmail.protocol.Code
-import cats.syntax.flatMap.*
+import org.specs2.specification.core.Fragments
+import org.specs2.specification.{AfterSpec, BeforeSpec}
+import pencilmail.SmtpSpec2.mimeEmail
 import pencilmail.data.{Body, Email}
-import SmtpSpec2.mimeEmail
-import org.specs2.specification.{AfterAll, BeforeAll}
 import pencilmail.lib.MailServerSpec
-class SmtpSpec2 extends MailServerSpec with BeforeAll with AfterAll {
+import pencilmail.syntax.*
+
+import scala.language.implicitConversions
+class SmtpSpec2 extends MailServerSpec with BeforeSpec with AfterSpec {
 
   sequential
   
-  override def beforeAll(): Unit = start()
-  override def afterAll(): Unit = stop()
+  override def beforeSpec: Fragments = step(start())
+  override def afterSpec: Fragments = step(stop())
   
   "smtp command be" should {
     "ehlo" in {
