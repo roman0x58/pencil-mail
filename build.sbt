@@ -1,20 +1,20 @@
 val catsVersion = "2.13.0"
 val catsEffectVersion = "3.6.3"
-val fs2Version = "3.12.0"
+val fs2Version = "3.12.2"
 val scodecBitsVersion = "1.2.4"
-val scodecCoreVersion = "2.3.2"
-val specs2Version = "5.6.4"
-val scalacheckVersion = "1.18.1"
+val scodecCoreVersion = "2.3.3"
+val specs2Version = "5.7.0"
+val scalacheckVersion = "1.19.0"
 val log4catsVersion = "2.7.1"
-val logbackVersion = "1.5.18"
+val logbackVersion = "1.5.32"
 val literallyVersion = "1.2.0"
-val http4sVersion = "0.23.30"
-val circeVersion = "0.14.14"
-val testContainersVersion = "1.21.3"
+val http4sVersion = "0.23.33"
+val circeVersion = "0.14.15"
+val testContainersVersion = "2.0.3"
 
 lazy val root = (project in file("."))
   .settings(
-    version := "3.0.5",
+    version := "3.0.6",
     organization := "io.github.roman0x58",
     name := "pencil-mail",
     scalaVersion := "3.7.1",
