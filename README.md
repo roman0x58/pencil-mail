@@ -76,6 +76,15 @@ val email = Email.mime(
 
 ```
 
+#### Add custom headers
+
+```scala
+val emailWithIdempotency = email.addHeader(
+  CustomHeader.unsafe("Resend-Idempotency-Key", "welcome-user/123456789")
+)
+
+```
+
 #### Send email example
 
 ```scala

@@ -52,3 +52,5 @@ type Password = pencilmail.data.PasswordType.Password
 val Password = pencilmail.data.PasswordType.Password
 type Name = pencilmail.data.NameType.Name
 val Name = pencilmail.data.NameType.Name
+type CustomHeader = pencilmail.data.CustomHeader
+val CustomHeader = pencilmail.data.CustomHeader
