@@ -126,7 +126,7 @@ keytool -import -trustcacerts -keystore test-truststore.jks -storepass changeit 
 
 ```bash
 sbt -Daws.username=username -Daws.password=password -Daws.from=from -Daws.to=to
-
+sbt:pencil-mail> testOnly pencilmail.SmtpSESSpec
 ```
 
 ### Docker Mailserver
