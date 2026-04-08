@@ -26,10 +26,10 @@ import scala.concurrent.duration.*
 trait SmtpBaseSpec extends SpecificationLike with LiteralsSyntax:
 
   given logger: Logger[IO] = Slf4jLogger.getLoggerFromName[IO]("smtp.base")
-  val timestamp: Instant = Instant.now()
-  val clock: Clock = Clock.fixed(timestamp, ZoneId.from(ZoneOffset.UTC))
-  val host: HostType.Host = PHost.local()
-  val uuid: String = UUID.randomUUID().toString
+  val timestamp: Instant   = Instant.now()
+  val clock: Clock         = Clock.fixed(timestamp, ZoneId.from(ZoneOffset.UTC))
+  val host: HostType.Host  = PHost.local()
+  val uuid: String         = UUID.randomUUID().toString
 
   protected def credentials: Credentials = Credentials(
     Username("pencilmail"),
@@ -37,9 +37,9 @@ trait SmtpBaseSpec extends SpecificationLike with LiteralsSyntax:
   )
   def socket(
       address: SocketAddress[Host]
-  ): Resource[IO, SmtpSocket[IO]] =
+  ): Resource[IO, SmtpSocket[IO]]        =
     Network[IO]
-      .client(address)
+      .connect(address)
       .map(SmtpSocket.fromSocket(_))
 
   type ServerStateRef = Ref[IO, List[ServerState]]
@@ -48,13 +48,12 @@ trait SmtpBaseSpec extends SpecificationLike with LiteralsSyntax:
   ): IO[A] =
     for {
       localBindAddress <- Deferred[IO, SocketAddress[Host]]
-      state <- Ref[IO].of(List.empty[ServerState])
-      server <- SmtpServer(state).start(localBindAddress).start
-      address <- localBindAddress.get
-      result <- socket(address).use(sock => run(sock, state, address))
-      _ <- server.cancel
+      state            <- Ref[IO].of(List.empty[ServerState])
+      server           <- SmtpServer(state).start(localBindAddress).start
+      address          <- localBindAddress.get
+      result           <- socket(address).use(sock => run(sock, state, address))
+      _                <- server.cancel
     } yield result
-
 
   def runTestCommandWithSocket[Repl, B](
       command: (socket: Resource[IO, SmtpSocket[IO]]) => Smtp[IO, Repl],
@@ -64,15 +63,15 @@ trait SmtpBaseSpec extends SpecificationLike with LiteralsSyntax:
     withSocket { (smtpSocket, state, address) =>
       (for {
         lastCommand <- command(Resource.pure(smtpSocket))
-        raw <- Smtp.liftF(Temporal[IO].sleep(100.millis) >> state.get)
-        result <- Smtp.liftF(raw.traverse { case (bits, req, rep) =>
-          codec.decode(bits).toEither match {
-            case Right(DecodeResult(decoded, _)) =>
-              IO.pure((decoded, req, rep))
-            case Left(err) =>
-              Error.smtpError[IO, (B, Command, Replies)](err.message)
-          }
-        })
+        raw         <- Smtp.liftF(Temporal[IO].sleep(100.millis) >> state.get)
+        result      <- Smtp.liftF(raw.traverse { case (bits, req, rep) =>
+                         codec.decode(bits).toEither match {
+                           case Right(DecodeResult(decoded, _)) =>
+                             IO.pure((decoded, req, rep))
+                           case Left(err)                       =>
+                             Error.smtpError[IO, (B, Command, Replies)](err.message)
+                         }
+                       })
       } yield (lastCommand, result)).run(
         SmtpRequest(
           email,
@@ -83,7 +82,6 @@ trait SmtpBaseSpec extends SpecificationLike with LiteralsSyntax:
         )
       )
     }.attempt.unsafeRunSync()
-
 
   /** @deprecated
     */

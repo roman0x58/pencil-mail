@@ -27,7 +27,7 @@ object ContentTypeFinder:
   def findType[F[_]: Sync](path: Path): F[ContentType] =
     Sync[F]
       .defer {
-        if (path.toFile.exists()) {
+        if path.toFile.exists() then {
           val guess = Option(URLConnection.guessContentTypeFromName(path.getFileName.toString))
           Sync[F].pure(guess.flatMap(ContentType.findType).getOrElse(ContentType.`application/octet-stream`))
         } else Sync[F].raiseError(Error.ResourceNotFound(path.toString))

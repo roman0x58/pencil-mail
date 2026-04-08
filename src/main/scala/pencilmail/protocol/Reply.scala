@@ -24,10 +24,10 @@ import scodec.codecs.*
 final case class Reply(code: Code, sep: String, text: String) extends Product with Serializable
 
 final case class Replies(replies: List[Reply]) extends Product with Serializable:
-  def success: Boolean             = replies.forall(_.code.success)
-  def hasCode(code: Code): Boolean = replies.map(_.code).contains(code)
-  def :+(reply: Reply): Replies = Replies(replies :+ reply)
-  def +:(reply: Reply): Replies = Replies(reply +: replies)
+  def success: Boolean              = replies.forall(_.code.success)
+  def hasCode(code: Code): Boolean  = replies.map(_.code).contains(code)
+  def :+(reply: Reply): Replies     = Replies(replies :+ reply)
+  def +:(reply: Reply): Replies     = Replies(reply +: replies)
   def ++(replies: Replies): Replies = Replies(this.replies ++ replies.replies)
 
 object Replies:

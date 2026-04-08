@@ -28,7 +28,7 @@ final case class Mailbox(localPart: String, domain: String, name: Option[Name] =
 
 object Mailbox:
 
-  def unsafeFromString(mailbox: String): Mailbox          =
+  def unsafeFromString(mailbox: String): Mailbox =
     fromString(mailbox).fold(throw _, identity)
 
   def fromString(mailbox: String): Either[Error, Mailbox] =

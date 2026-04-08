@@ -39,7 +39,7 @@ object Command:
 
   given Show[Command]  = Show.show {
     case Ehlo(domain)                           => s"EHLO $domain$end"
-    case Mail(Mailbox(localPart, domain, name)) => 
+    case Mail(Mailbox(localPart, domain, name)) =>
       s"MAIL FROM: <$localPart@$domain>$end"
     case Rcpt(Mailbox(localPart, domain, name)) =>
       s"RCPT TO: <$localPart@$domain>$end"

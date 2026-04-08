@@ -22,7 +22,7 @@ import cats.Show
 object UsernameType:
   opaque type Username = String
   object Username:
-    def apply(username: String): Username = if (Option(username).isEmpty)
+    def apply(username: String): Username = if Option(username).isEmpty then
       throw Error.PencilError("Username can't be null")
     else username
 
@@ -31,7 +31,7 @@ object PasswordType:
   opaque type Password = String
 
   object Password:
-    def apply(password: String): Password = if (Option(password).isEmpty)
+    def apply(password: String): Password = if Option(password).isEmpty then
       throw Error.PencilError("Password can't be null")
     else password
 

@@ -21,25 +21,25 @@ object MailServerContainer:
   def mk(configuration: ContainerConfiguration = ContainerConfiguration()): MailServerContainer =
     val username = Username("pencil")
     val password = Password("pencil1234")
-    val smtp = 1025
-    val http = 8025
+    val smtp     = 1025
+    val http     = 8025
 
     val container = GenericContainer(DockerImageName.parse("axllent/mailpit"))
     container.withClasspathResourceMapping("certs", "/data", BindMode.READ_ONLY)
     container.addExposedPorts(smtp, http)
-    
+
     def applyTLS = {
       container.addEnv("MP_SMTP_AUTH_FILE", "/data/pass.txt")
       container.addEnv("MP_SMTP_TLS_CERT", "/data/certificate.crt")
       container.addEnv("MP_SMTP_TLS_KEY", "/data/keyfile.key")
     }
     configuration.smtpMode match {
-      case SmtpMode.Plain =>
+      case SmtpMode.Plain    =>
         container.addEnv("MP_SMTP_AUTH_ALLOW_INSECURE", "true")
-      case SmtpMode.StartTLS  =>
+      case SmtpMode.StartTLS =>
         container.addEnv("MP_SMTP_AUTH_ALLOW_INSECURE", "true")
         applyTLS
-      case SmtpMode.TLS =>
+      case SmtpMode.TLS      =>
         container.addEnv("MP_SMTP_REQUIRE_TLS", "true")
         applyTLS
     }

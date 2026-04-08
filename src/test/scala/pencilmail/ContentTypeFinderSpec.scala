@@ -22,7 +22,8 @@ class ContentTypeFinderSpec extends Specification with ScalaCheck {
 
     "not find file" in {
       val file = Paths.get("files/!!!jpeg-sample.jpg")
-      ContentTypeFinder.findType[IO](file)
+      ContentTypeFinder
+        .findType[IO](file)
         .attempt
         .unsafeRunSync() must beLeft(Error.ResourceNotFound(file.toString))
     }

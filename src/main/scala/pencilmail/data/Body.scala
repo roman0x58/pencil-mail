@@ -26,8 +26,8 @@ enum Body:
   case Html(value: String)
   case Utf8(value: String)
   case Alternative(bodies: List[Body])
-  def body: Option[String]             = fold(_.value.some, _.value.some, _.value.some, const(None))
-  def ascii: Option[Ascii]             = fold(_.some, const(None), const(None), const(None))
+  def body: Option[String] = fold(_.value.some, _.value.some, _.value.some, const(None))
+  def ascii: Option[Ascii] = fold(_.some, const(None), const(None), const(None))
 
   def fold[A](
       ascii: Ascii => A,
@@ -40,10 +40,10 @@ enum Body:
     case u @ Utf8(_)        => utf8(u)
     case a @ Alternative(_) => alternative(a)
 
-  def html: Option[Html]               = fold(const(None), _.some, const(None), const(None))
+  def html: Option[Html] = fold(const(None), _.some, const(None), const(None))
 
-  def utf8: Option[Utf8]               = fold(const(None), const(None), _.some, const(None))
+  def utf8: Option[Utf8] = fold(const(None), const(None), _.some, const(None))
 
-  def isAlternative: Boolean           = alternative.isDefined
+  def isAlternative: Boolean = alternative.isDefined
 
   def alternative: Option[Alternative] = fold(const(None), const(None), const(None), _.some)

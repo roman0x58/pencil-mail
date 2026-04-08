@@ -11,9 +11,9 @@ class MailboxParserSpec extends Specification with ScalaCheck {
 
   "MailboxParser" should {
     "parse" in Prop.forAll(localPartGen, domainGen, nameGen) { (lp, domain, name) =>
-      val email = s"$lp@$domain"
+      val email  = s"$lp@$domain"
       val result = MailboxParser.parse(name.map(n => s"$n<$email>").getOrElse(email))
-      val r = Right(Mailbox(lp, domain, name.map(Name(_))))
+      val r      = Right(Mailbox(lp, domain, name.map(Name(_))))
       result == r
 
     }

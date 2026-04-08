@@ -12,10 +12,10 @@ import scala.language.implicitConversions
 class SmtpSpec2 extends MailServerSpec with BeforeSpec with AfterSpec {
 
   sequential
-  
+
   override def beforeSpec: Fragments = step(start())
-  override def afterSpec: Fragments = step(stop())
-  
+  override def afterSpec: Fragments  = step(stop())
+
   "smtp command be" should {
     "ehlo" in {
       val r = Smtp.ehlo[IO]().runCommand

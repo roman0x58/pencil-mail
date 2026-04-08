@@ -34,7 +34,7 @@ enum EmailType:
     case Mime(boundary, attachments) => Mime(boundary, a :: attachments)
   }
 
-  def mime: Option[Mime]      = fold(None, _.some)
+  def mime: Option[Mime] = fold(None, _.some)
 
   def text: Option[Text.type] = fold(Some(Text), _ => None)
 
@@ -43,8 +43,8 @@ enum EmailType:
       case Text           => text
       case m @ Mime(_, _) => mime(m)
 
-  def isMime: Boolean         = fold(false, _ => true)
-  def isText: Boolean         = fold(true, _ => false)
+  def isMime: Boolean = fold(false, _ => true)
+  def isText: Boolean = fold(true, _ => false)
 
 final case class Email(
     from: From,

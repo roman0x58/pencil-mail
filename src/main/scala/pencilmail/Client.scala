@@ -53,7 +53,7 @@ object Client:
       socketTimeoutConfig: SocketTimeoutConfig = SocketTimeoutConfig.default
   ): Client[F] =
     new Client[F] {
-      private val socketResource: Resource[F, Socket[F]] = Network[F].client(address)
+      private val socketResource: Resource[F, Socket[F]] = Network[F].connect(address)
 
       given Logger[F] = logger
 

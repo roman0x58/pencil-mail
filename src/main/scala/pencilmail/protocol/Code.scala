@@ -76,7 +76,7 @@ enum Code(val value: Int, val description: String):
   def success: Boolean = value < 400
 
 object Code:
-  given Codec[Code]              = Codec[Code](
+  given Codec[Code] = Codec[Code](
     (value: Code) => ascii.encode(value.toString),
     (bits: BitVector) =>
       limitedSizeBits(3 * 8, ascii).decode(bits) match {

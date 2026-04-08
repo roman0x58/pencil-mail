@@ -23,7 +23,7 @@ class SmtpOperations[F[_]: {Logger, Async}](val credentials: Option[Credentials]
     }
 
   private def maybeAuthenticate(replies: Replies): Smtp[F, Unit] =
-    if (replies.isAuthSupported) credentials.fold(Smtp.unit)(Smtp.login[F])
+    if replies.isAuthSupported then credentials.fold(Smtp.unit)(Smtp.login[F])
     else Smtp.unit[F]
 
   private def sender: Smtp[F, Replies] = Smtp.ask[F].flatMap { r =>
@@ -69,8 +69,7 @@ class SmtpOperations[F[_]: {Logger, Async}](val credentials: Option[Credentials]
       _        <- Smtp.init[F]()
       rep      <- Smtp.ehlo[F]()
       _        <- {
-        if (rep.supportTLS)
-          Smtp.liftF(Async[F].raiseError(Error.PencilError("Use TLS mode instead of plain.")))
+        if rep.supportTLS then Smtp.liftF(Async[F].raiseError(Error.PencilError("Use TLS mode instead of plain.")))
         else maybeAuthenticate(rep)
       }
       response <- sender

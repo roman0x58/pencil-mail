@@ -26,8 +26,8 @@ import scodec.{Attempt, Codec, DecodeResult, SizeBound}
 
 final case class CommandCodec() extends Codec[Command] {
 
-  private val END                          = Command.end.toBitVector
-  private val SPACE                        = ByteVector(" ".getBytes).toBitVector
+  private val END   = Command.end.toBitVector
+  private val SPACE = ByteVector(" ".getBytes).toBitVector
 
   override def decode(bits: BitVector): Attempt[DecodeResult[Command]] =
     limitedSizeBits(4 * 8, ascii).decode(bits).flatMap { case DecodeResult(cmd, rest) =>

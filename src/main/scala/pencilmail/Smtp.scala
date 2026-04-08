@@ -175,7 +175,7 @@ object Smtp {
     email[F].flatMap {
       case Email(_, _, _, _, _, _, EmailType.Text, _) =>
         text[F](Command.endEmail).flatMap(_ => read[F])
-      case _                                       =>
+      case _                                          =>
         for {
           _       <- boundary[F](true)
           _       <- text[F](Command.endEmail)
@@ -379,7 +379,7 @@ object Smtp {
     email[F].flatMap {
       case Email(_, _, _, _, _, Some(body), EmailType.Mime(_, _), _) =>
         sendBody(body)
-      case _                                                      =>
+      case _                                                         =>
         liftF(Error.smtpError[F, Unit]("not mime email"))
     }
 

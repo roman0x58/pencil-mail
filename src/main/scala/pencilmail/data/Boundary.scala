@@ -24,7 +24,7 @@ object BoundaryType:
   object Boundary:
     def unapply(b: Boundary): Option[String & Matchable] = Some(b)
 
-    def genFrom(value: String): Boundary                 = {
+    def genFrom(value: String): Boundary = {
       val cs = MessageDigest
         .getInstance("MD5")
         .digest(value.getBytes("UTF-8"))
@@ -33,4 +33,4 @@ object BoundaryType:
       Boundary(cs)
     }
 
-    def apply(v: String): Boundary                       = v
+    def apply(v: String): Boundary = v

@@ -17,9 +17,9 @@ class ProtocolSpec extends Specification with ScalaCheck with ProtocolGens {
   "Protocol" should {
 
     "decode strings with CRLF into list" in {
-      val is = getClass().getResourceAsStream("/output.txt")
-      val output = Source.fromInputStream(is).mkString
-      val result = DelimiterListCodec(CRLF, ascii).decode(output.toBitVector)
+      val is       = getClass().getResourceAsStream("/output.txt")
+      val output   = Source.fromInputStream(is).mkString
+      val result   = DelimiterListCodec(CRLF, ascii).decode(output.toBitVector)
       val expected = output.split("\r\n").toList
       result.toEither must beRight(DecodeResult(expected, BitVector.empty))
     }
@@ -37,7 +37,7 @@ class ProtocolSpec extends Specification with ScalaCheck with ProtocolGens {
   }
 
   def property[A: Codec](a: A): Result = {
-    val c = implicitly[Codec[A]]
+    val c       = implicitly[Codec[A]]
     val encoded = c.encode(a)
     val decoded = encoded.flatMap(c.decode)
     decoded === Attempt.successful(DecodeResult(a, BitVector.empty))

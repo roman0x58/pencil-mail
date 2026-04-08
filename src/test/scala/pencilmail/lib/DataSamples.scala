@@ -14,23 +14,23 @@ object DataSamples {
   )
 
   val `mail.example.com` = Reply(Code.code(250).get, "-", "mail.example.com")
-  val PIPELINING: Reply = Reply(Code.code(250).get, "-", "PIPELINING")
-  val `8BITMIME`: Reply = Reply(Code.code(250).get, " ", "8BITMIME")
-  val `AUTH`: Reply = Reply(Code.code(250).get, " ", "AUTH LOGIN")
+  val PIPELINING: Reply  = Reply(Code.code(250).get, "-", "PIPELINING")
+  val `8BITMIME`: Reply  = Reply(Code.code(250).get, " ", "8BITMIME")
+  val `AUTH`: Reply      = Reply(Code.code(250).get, " ", "AUTH LOGIN")
 
   val ehloReplies: Replies = Replies(
     List(`mail.example.com`, PIPELINING, `8BITMIME`, `AUTH`)
   )
-  val `334_USERNAME` = Replies(
+  val `334_USERNAME`       = Replies(
     Reply(Code.code(334).get, " ", "VXNlcm5hbWU6")
   )
-  val `334_PASSWORD` = Replies(
+  val `334_PASSWORD`       = Replies(
     Reply(Code.code(334).get, " ", "UGFzc3dvcmQ6")
   )
-  val `250 OK` = Replies(
+  val `250 OK`             = Replies(
     Reply(Code.code(250).get, " ", "2.1.0 Ok")
   )
-  val `235 AUTH OK` = Replies(
+  val `235 AUTH OK`        = Replies(
     Reply(Code.code(235).get, " ", "2.7.0 Authentication successful")
   )
 

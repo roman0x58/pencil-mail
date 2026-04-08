@@ -69,7 +69,8 @@ class SendEmailSpec extends MailServerSpec {
     def sendEmail(email: Email): IO[Replies] =
       for
         tls       <- Network[IO].tlsContext.fromKeyStoreFile(
-                       Files.pathFromClassLoader[IO]("certs/test-truststore.jks").unsafeRunSync(),
+                       fs2.io.file.Path
+                         .fromNioPath(Files.pathFromClassLoader[IO]("certs/test-truststore.jks").unsafeRunSync()),
                        "changeit".toCharArray,
                        "pencil1234".toCharArray
                      )

@@ -15,10 +15,9 @@ type ServerState = (bits: BitVector, command: Command, reply: Replies)
 final case class SmtpServer(
     state: Ref[IO, List[ServerState]]
 ) {
-
   def start(localBindAddress: Deferred[IO, SocketAddress[Host]]): IO[Unit] =
     Stream
-      .resource(Network[IO].serverResource(Some(ip"127.0.0.1"), Some(port"0")))
+      .resource(Network[IO].bind(SocketAddress(ip"127.0.0.1", port"0")).map(ss => ss.address.asIpUnsafe -> ss.accept))
       .flatMap { case (localAddress, server) =>
         Stream.eval(localBindAddress.complete(localAddress)).drain ++
           server.flatMap { socket =>
@@ -59,7 +58,7 @@ final case class SmtpServer(
       case In(raw, cmd @ Text(Command.endEmail)) =>
         process(raw, cmd, DataSamples.`250 OK`)
 
-      case In(raw, cmd @ Text(_)) =>
+      case In(raw, cmd @ Text(_))   =>
         Stream
           .eval(state.get)
           .flatMap(_.lastOption.map(_.reply) match {
@@ -67,12 +66,12 @@ final case class SmtpServer(
               process(raw, cmd, DataSamples.`334_PASSWORD`)
             case Some(r @ DataSamples.`334_PASSWORD`) =>
               process(raw, cmd, DataSamples.`235 AUTH OK`)
-            case _ =>
+            case _                                    =>
               Stream.eval(state.tryUpdate(_ :+ (raw, cmd, Replies.empty))).drain ++ Stream.empty
           })
       case In(raw, cmd @ AuthLogin) =>
         process(raw, cmd, DataSamples.`334_USERNAME`)
-      case In(raw, cmd @ StartTls) =>
+      case In(raw, cmd @ StartTls)  =>
         process(raw, cmd, DataSamples.`220 Greeting`)
     }
   }
@@ -80,7 +79,7 @@ final case class SmtpServer(
 }
 
 final case class MessageSocket(socket: Socket[IO]) extends Product with Serializable {
-  def read: Stream[IO, In] =
+  def read: Stream[IO, In]                      =
     socket.reads
       .through(decoder.toPipeByte[IO])
       .through { s =>

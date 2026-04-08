@@ -62,4 +62,3 @@ object Error:
       msg: String
   )(using F: ApplicativeThrow[F]): F[A] =
     F.raiseError(ResourceNotFound(msg))
-
