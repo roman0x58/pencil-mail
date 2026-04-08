@@ -53,7 +53,8 @@ final case class Email(
     bcc: Option[Bcc],
     subject: Option[Subject],
     body: Option[Body],
-    emailType: EmailType
+    emailType: EmailType,
+    customHeaders: Vector[CustomHeader] = Vector.empty
 ):
   def recipients: NonEmptyList[Mailbox] = (cc, bcc) match {
     case (Some(cc), Some(bcc)) =>
@@ -103,6 +104,26 @@ final case class Email(
   /** Set `subject`. Replace existing one with a new one.
     */
   def setSubject(subject: Subject): Email = copy(subject = Some(subject))
+
+  /** Set all custom headers. Replace existing ones.
+    */
+  def setHeaders(headers: Vector[CustomHeader]): Email =
+    copy(customHeaders = headers)
+
+  /** Add a custom header.
+    */
+  @targetName("+header")
+  def +(header: CustomHeader): Email = addHeader(header)
+
+  /** Add a custom header.
+    */
+  def addHeader(header: CustomHeader): Email =
+    copy(customHeaders = customHeaders :+ header)
+
+  /** Add a custom header from name/value.
+    */
+  def addHeader(name: String, value: String): Either[Error, Email] =
+    CustomHeader.from(name, value).map(addHeader)
 
   /** Set `from`. Replace existing one with a new one.
     */

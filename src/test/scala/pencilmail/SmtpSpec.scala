@@ -170,6 +170,20 @@ class SmtpSpec extends SmtpBaseSpec {
         )
       )
     }
+
+    "send customHeaders" in {
+      val header = CustomHeader.unsafe("Resend-Idempotency-Key", "welcome-user/123456789")
+      val email = SmtpSpec.mime.addHeader(header)
+      val result = runTestCommand(Smtp.customHeaders(), email, codecs.ascii)
+      result.map(_._2) must beRight(
+        beEqualTo(
+          List(
+            s"${header.render}${Command.end}"
+          )
+        )
+      )
+    }
+
     "send mainHeaders" in {
       val email = SmtpSpec.mime
       val result = runTestCommand(Smtp.mainHeaders(), email, codecs.ascii)
@@ -185,6 +199,26 @@ class SmtpSpec extends SmtpBaseSpec {
             s"Bcc: ${email.bcc.get.show}${Command.end}",
             s"Message-ID: <$uuid.${timestamp.getEpochSecond}@${host.name}>${Command.end}",
             s"Subject: =?utf-8?b?${email.subject.get.toBase64}?=${Command.end}"
+          )
+        )
+      )
+    }
+
+    "send mainHeaders with custom header" in {
+      val header = CustomHeader.unsafe("Resend-Idempotency-Key", "welcome-user/123456789")
+      val email = SmtpSpec.mime.addHeader(header)
+      val result = runTestCommand(Smtp.mainHeaders(), email, codecs.ascii)
+      result.map(_._2) must beRight(
+        beEqualTo(
+          List(
+            s"Date: ${Smtp.dateFormatter.format(timestamp)}${Command.end}",
+            s"From: ${email.from.show}${Command.end}",
+            s"To: ${email.to.show}${Command.end}",
+            s"Cc: ${email.cc.get.show}${Command.end}",
+            s"Bcc: ${email.bcc.get.show}${Command.end}",
+            s"Message-ID: <$uuid.${timestamp.getEpochSecond}@${host.name}>${Command.end}",
+            s"Subject: =?utf-8?b?${email.subject.get.toBase64}?=${Command.end}",
+            s"${header.render}${Command.end}"
           )
         )
       )

@@ -55,4 +55,13 @@ class EmailSpec extends Specification with ScalaCheck with EmailGens:
       if email.isMime then email.addAttachment(attachment) == (email + attachment)
       else true
     }
+
+    "add custom header" in forAll { (email: Email) =>
+      val header = CustomHeader.unsafe("Resend-Idempotency-Key", "welcome-user/123456789")
+      email.addHeader(header).customHeaders.lastOption.contains(header)
+    }
+
+    "reject invalid custom header value" in {
+      CustomHeader.from("Resend-Idempotency-Key", "first\r\nsecond") must beLeft
+    }
   }

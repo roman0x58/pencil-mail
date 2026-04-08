@@ -28,7 +28,7 @@ class SmtpOperations[F[_]: {Logger, Async}](val credentials: Option[Credentials]
 
   private def sender: Smtp[F, Replies] = Smtp.ask[F].flatMap { r =>
     r.email match {
-      case Email(_, _, _, _, _, _, EmailType.Text) =>
+      case Email(_, _, _, _, _, _, EmailType.Text, _) =>
         for
           _ <- Smtp.mail[F]()
           _ <- Smtp.rcpt[F]()
@@ -39,7 +39,7 @@ class SmtpOperations[F[_]: {Logger, Async}](val credentials: Option[Credentials]
           r <- Smtp.quit[F]()
         yield r
 
-      case Email(_, _, _, _, _, _, EmailType.Mime(_, _)) =>
+      case Email(_, _, _, _, _, _, EmailType.Mime(_, _), _) =>
         for
           _ <- Smtp.mail[F]()
           _ <- Smtp.rcpt[F]()
